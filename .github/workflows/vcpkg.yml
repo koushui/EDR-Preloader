@@ -1,19 +1,20 @@
-name: Build Visual Studio Project
- 
-on: [push]
- 
+name: Build_vcxproj
+
+on:
+  push:
+    branches:
+      - main
+
 jobs:
   build:
     runs-on: windows-latest
- 
+
     steps:
-    - uses: actions/checkout@v3
- 
-    - name: Install Visual Studio Build Tools
-      uses: microsoft/setup-msbuild@v1.0.0
-      with:
-        vs-version: '16.0'
-        components: 'Microsoft.VisualStudio.Workload.NativeDesktop,Microsoft.VisualStudio.Workload.ManagedDesktop'
- 
-    - name: Build the project
-      run: msbuild /restore EDR-Preloader.vcxproj
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up MSBuild
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - name: Build project
+      run: msbuild /p:Configuration=Release /p:Platform=x64 EDR-Preloader.vcxproj
