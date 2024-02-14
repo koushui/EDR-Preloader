@@ -1,4 +1,4 @@
-name: Build_vcxproj
+name: Build from vcxproj Test Release
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build:
+  build_and_test:
     runs-on: windows-latest
 
     steps:
@@ -18,3 +18,26 @@ jobs:
 
     - name: Build project
       run: msbuild /p:Configuration=Release /p:Platform=x64 EDR-Preloader.vcxproj
+
+    - name: Run tests
+      run: |
+        # Run your tests here
+        EDR-Preloader.exe
+        shell: cmd
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name:  ${{ github.ref }} # Set your desired tag name here
+        release_name: Release ${{ github.ref }} # Set your desired release name here
+        body: |
+          Describe your release here.
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: EDR-Preloader-${{ github.run_number }}
+        path: ./x64/Release/EDR-Preloader.exe
